@@ -1,0 +1,41 @@
+{
+  "documents": [
+    {
+      "file_id": 9,
+      "filename": "Diabetes_Report_2025_04.pdf",
+      "chunk_id": 0,
+      "content": "Diabetes Lab Report - April 2025 Name: John Doe Age: 52 Gender: Male Date: 2025-04-01 Time: 06:28:10 Fasting Blood Glucose: 95 mg/dL Postprandial Glucose: 106 mg/dL HbA1c: 6.6 % Insulin: 22.1 \u00b5IU/mL C-Peptide: 1.3 ng/mL Ketones (Urine): Trace Random Glucose: 116 mg/dL Diabetes Lab Report - April 2025 Name: John Doe Age: 52 Gender: Male Date: 2025-04-01 Time: 06:28:10 Fasting Blood Glucose: 127 mg/dL Postprandial Glucose: 100 mg/dL HbA1c: 6.7 % Insulin: 15.8 \u00b5IU/mL C-Peptide: 1.38 ng/mL Ketones (Urine): Moderate Random Glucose: 94 mg/dL"
+    },
+    {
+      "file_id": 11,
+      "filename": "Diabetes_Report_2025_03.pdf",
+      "chunk_id": 0,
+      "content": "Diabetes Lab Report - March 2025 Name: John Doe Age: 52 Gender: Male Date: 2025-03-02 Time: 06:28:10 Fasting Blood Glucose: 111 mg/dL Postprandial Glucose: 117 mg/dL HbA1c: 8.3 % Insulin: 4.1 \u00b5IU/mL C-Peptide: 1.01 ng/mL Ketones (Urine): Moderate Random Glucose: 93 mg/dL Diabetes Lab Report - March 2025 Name: John Doe Age: 52 Gender: Male Date: 2025-03-02 Time: 06:28:10 Fasting Blood Glucose: 83 mg/dL Postprandial Glucose: 158 mg/dL HbA1c: 8.6 % Insulin: 20.1 \u00b5IU/mL C-Peptide: 2.11 ng/mL Ketones (Urine): Large Random Glucose: 150 mg/dL"
+    },
+    {
+      "file_id": 12,
+      "filename": "Diabetes_Report_2025_05.pdf",
+      "chunk_id": 0,
+      "content": "Diabetes Lab Report - May 2025 Name: John Doe Age: 52 Gender: Male Date: 2025-05-01 Time: 06:28:10 Fasting Blood Glucose: 104 mg/dL Postprandial Glucose: 123 mg/dL HbA1c: 6.6 % Insulin: 15.2 \u00b5IU/mL C-Peptide: 1.73 ng/mL Ketones (Urine): Moderate Random Glucose: 175 mg/dL Diabetes Lab Report - May 2025 Name: John Doe Age: 52 Gender: Male Date: 2025-05-01 Time: 06:28:10 Fasting Blood Glucose: 109 mg/dL Postprandial Glucose: 118 mg/dL HbA1c: 8.5 % Insulin: 15.2 \u00b5IU/mL C-Peptide: 0.69 ng/mL Ketones (Urine): Large Random Glucose: 109 mg/dL"
+    },
+    {
+      "file_id": 15,
+      "filename": "Diabetes_Report_2025_01.pdf",
+      "chunk_id": 0,
+      "content": "Diabetes Lab Report - January 2025 Name: John Doe Age: 52 Gender: Male Date: 2025-01-01 Time: 06:28:10 Fasting Blood Glucose: 107 mg/dL Postprandial Glucose: 149 mg/dL HbA1c: 5.9 % Insulin: 6.7 \u00b5IU/mL C-Peptide: 1.2 ng/mL Ketones (Urine): Negative Random Glucose: 114 mg/dL Diabetes Lab Report - January 2025 Name: John Doe Age: 52 Gender: Male Date: 2025-01-01 Time: 06:28:10 Fasting Blood Glucose: 109 mg/dL Postprandial Glucose: 114 mg/dL HbA1c: 6.4 % Insulin: 3.6 \u00b5IU/mL C-Peptide: 1.36 ng/mL Ketones (Urine): Trace Random Glucose: 149 mg/dL"
+    },
+    {
+      "file_id": 18,
+      "filename": "Diabetes_Lab_Report.pdf",
+      "chunk_id": 0,
+      "content": "Diabetes Lab Test Report Patient Name: Venkat R Age: 45 Gender: Male Date: 2025-05-23 Test Results: Fasting Blood Sugar: 110 mg/dL (Normal: 70-99) Postprandial Blood Sugar: 145 mg/dL (Normal: <140) HbA1c: 6.8% (Normal: <5.7%) Cholesterol: 190 mg/dL (Normal: <200) Triglycerides: 160 mg/dL (Normal: <150) HDL: 40 mg/dL (Normal: >40) LDL: 120 mg/dL (Normal: <100) Page 1"
+    },
+    {
+      "file_id": 20,
+      "filename": "Diabetes_Report_2025_05.pdf",
+      "chunk_id": 0,
+      "content": "Diabetes Lab Report - May 2025 Name: John Doe Age: 52 Gender: Male Date: 2025-05-01 Time: 06:28:10 Fasting Blood Glucose: 104 mg/dL Postprandial Glucose: 123 mg/dL HbA1c: 6.6 % Insulin: 15.2 \u00b5IU/mL C-Peptide: 1.73 ng/mL Ketones (Urine): Moderate Random Glucose: 175 mg/dL Diabetes Lab Report - May 2025 Name: John Doe Age: 52 Gender: Male Date: 2025-05-01 Time: 06:28:10 Fasting Blood Glucose: 109 mg/dL Postprandial Glucose: 118 mg/dL HbA1c: 8.5 % Insulin: 15.2 \u00b5IU/mL C-Peptide: 0.69 ng/mL Ketones (Urine): Large Random Glucose: 109 mg/dL"
+    }
+  ],
+  "is_fitted": true
+}
