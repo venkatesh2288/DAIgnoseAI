@@ -1,0 +1,580 @@
+{% extends "base.html" %}
+
+{% block title %}Medical Assistant - DAIgnoseAI{% endblock %}
+
+{% block fullscreen_content %}
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div class="position-fixed w-100" style="top: 70px; z-index: 1050;">
+            <div class="container-fluid">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+{% endwith %}
+
+<div class="chat-container d-flex flex-column" style="height: calc(100vh - 70px);">
+    
+    <!-- Chat Header -->
+    <div class="chat-header bg-primary text-white p-3">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center">
+                <div class="avatar me-3">
+                    <i class="fas fa-stethoscope fa-2x"></i>
+                </div>
+                <div>
+                    <h4 class="mb-0">D<span style="color: #fbbf24;">AI</span>gnose Medical Assistant</h4>
+                    <small class="opacity-75">AI-powered medical information</small>
+                </div>
+                <div class="ms-auto">
+                    <button class="btn btn-outline-light btn-sm" onclick="clearChat()">
+                        <i class="fas fa-trash me-1"></i>Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Messages Area -->
+    <div class="chat-messages flex-grow-1 p-4" id="chatMessages">
+            <!-- Welcome Message -->
+            <div class="message assistant-message mb-4">
+                <div class="message-content">
+                    <div class="d-flex align-items-start">
+                        <div class="avatar-small me-3">
+                            <i class="fas fa-stethoscope text-primary"></i>
+                        </div>
+                        <div class="message-bubble assistant">
+                            <div class="message-text">
+                                <h5>👋 Welcome to your Medical Assistant!</h5>
+                                <p>I'm here to help answer your medical and health-related questions using the latest research from PubMed. I can provide information about:</p>
+                                <ul class="mb-3">
+                                    <li>Medical conditions and symptoms</li>
+                                    <li>Treatment options and medications</li>
+                                    <li>Preventive care and wellness</li>
+                                    <li>Lab results interpretation</li>
+                                    <li>Health lifestyle recommendations</li>
+                                </ul>
+                                <div class="alert alert-info mb-0">
+                                    <small><strong>Disclaimer:</strong> I provide educational information only. Always consult with qualified healthcare professionals for medical advice, diagnosis, or treatment.</small>
+                                </div>
+                            </div>
+                            <div class="message-time">
+                                <small class="text-muted">Just now</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suggested Questions -->
+            <div class="suggested-questions mb-4">
+                <h6 class="text-muted mb-3">💡 Try asking about:</h6>
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-outline-primary btn-sm w-100 text-start suggestion-btn" 
+                                onclick="askSuggestion('What are the normal ranges for cholesterol levels?')">
+                            <i class="fas fa-heart me-2"></i>Normal cholesterol ranges
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-outline-primary btn-sm w-100 text-start suggestion-btn" 
+                                onclick="askSuggestion('What are the symptoms of diabetes?')">
+                            <i class="fas fa-tint me-2"></i>Diabetes symptoms
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-outline-primary btn-sm w-100 text-start suggestion-btn" 
+                                onclick="askSuggestion('How can I improve my blood pressure naturally?')">
+                            <i class="fas fa-heartbeat me-2"></i>Blood pressure management
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-outline-primary btn-sm w-100 text-start suggestion-btn" 
+                                onclick="askSuggestion('What vitamins are important for immune health?')">
+                            <i class="fas fa-shield-alt me-2"></i>Immune system support
+                        </button>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <!-- Typing Indicator -->
+    <div class="typing-indicator d-none" id="typingIndicator">
+            <div class="message assistant-message">
+                <div class="d-flex align-items-start">
+                    <div class="avatar-small me-3">
+                        <i class="fas fa-stethoscope text-primary"></i>
+                    </div>
+                    <div class="message-bubble assistant">
+                        <div class="typing-animation">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <small class="text-muted">Searching PubMed and analyzing...</small>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <!-- Chat Input -->
+    <div class="chat-input bg-light p-3">
+            <form id="chatForm" class="d-flex align-items-end">
+                <div class="flex-grow-1 me-3">
+                    <div class="input-group">
+                        <textarea id="messageInput" 
+                                 class="form-control chat-textarea" 
+                                 placeholder="Ask me"
+                                 rows="1"
+                                 maxlength="1000"></textarea>
+
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg" id="sendButton">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+<style>
+/* Chat Container Styles */
+.chat-container {
+    height: 100vh;
+    background: #ffffff;
+
+}
+
+.chat-messages {
+    overflow-y: auto;
+    background: #f8f9fa;
+    scroll-behavior: smooth;
+}
+
+/* Message Styles */
+.message {
+    margin-bottom: 1rem;
+}
+
+.message-bubble {
+    max-width: 80%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    position: relative;
+}
+
+.message-bubble.user {
+    background: #007bff;
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 6px;
+}
+
+.message-bubble.assistant {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-bottom-left-radius: 6px;
+}
+
+.user-message .message-content {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.assistant-message .message-content {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.avatar-small {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 4px;
+}
+
+/* Removed timestamp styling for cleaner UX */
+
+/* Chat Input Styles */
+.chat-textarea {
+    resize: none;
+    border: 2px solid #e9ecef;
+    border-radius: 20px;
+    padding: 14px 18px;
+    font-size: 15px;
+    line-height: 1.5;
+    max-height: 120px;
+    background: white;
+    transition: all 0.2s ease;
+}
+
+.chat-textarea:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    outline: none;
+}
+
+.chat-textarea::placeholder {
+    color: #9ca3af;
+}
+
+#sendButton {
+    border-radius: 12px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+    border: none;
+    margin-left: 12px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+}
+
+#sendButton:hover:not(:disabled) {
+    background: linear-gradient(135deg, #1e40af, #1e3a8a);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+#sendButton:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Typing Animation */
+.typing-animation {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 5px;
+}
+
+.typing-animation span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #007bff;
+    animation: typing 1.4s infinite;
+}
+
+.typing-animation span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-animation span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes typing {
+    0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.5;
+    }
+    30% {
+        transform: translateY(-10px);
+        opacity: 1;
+    }
+}
+
+/* Clean Chat Input Area */
+.chat-input {
+    background: #f8fafc !important;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Suggestion Buttons */
+.suggestion-btn {
+    text-align: left !important;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+
+.suggestion-btn:hover {
+    border-style: solid;
+    transform: translateY(-1px);
+}
+
+/* Source Citations */
+.sources-section {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #dee2e6;
+}
+
+.source-item {
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border-left: 3px solid #007bff;
+}
+
+.source-title {
+    font-weight: 600;
+    color: #007bff;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+.source-link {
+    color: #6c757d;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+.source-link:hover {
+    color: #007bff;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .chat-container {
+        height: calc(100vh - 100px);
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+    
+    .message-bubble {
+        max-width: 90%;
+    }
+    
+    .suggested-questions .col-md-6 {
+        margin-bottom: 8px;
+    }
+}
+
+/* Scrollbar Styling */
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const messageInput = document.getElementById('messageInput');
+    const chatForm = document.getElementById('chatForm');
+    const chatMessages = document.getElementById('chatMessages');
+    const sendButton = document.getElementById('sendButton');
+    const typingIndicator = document.getElementById('typingIndicator');
+
+    // Auto-resize textarea
+    messageInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+        
+        // Enable/disable send button
+        sendButton.disabled = this.value.trim().length === 0;
+    });
+
+    // Handle form submission
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const message = messageInput.value.trim();
+        if (message) {
+            sendMessage(message);
+        }
+    });
+
+    // Handle Enter key (Shift+Enter for new line)
+    messageInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            if (this.value.trim()) {
+                chatForm.dispatchEvent(new Event('submit'));
+            }
+        }
+    });
+
+    // Send message function
+    async function sendMessage(message) {
+        // Add user message to chat
+        addMessage(message, 'user');
+        
+        // Clear input and hide suggestions
+        messageInput.value = '';
+        messageInput.style.height = 'auto';
+        charCount.textContent = '0/1000';
+        sendButton.disabled = true;
+        hideSuggestions();
+        
+        // Show typing indicator
+        showTypingIndicator();
+        
+        try {
+            const response = await fetch('/ask-medical-question', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ question: message })
+            });
+            
+            const data = await response.json();
+            
+            // Hide typing indicator
+            hideTypingIndicator();
+            
+            if (data.error) {
+                addMessage('I apologize, but I encountered an error processing your question. Please try again.', 'assistant');
+            } else {
+                addMessage(data.response, 'assistant', data.sources);
+            }
+        } catch (error) {
+            hideTypingIndicator();
+            addMessage('I apologize, but I\'m having trouble connecting right now. Please check your internet connection and try again.', 'assistant');
+        }
+        
+        // Focus back on input
+        messageInput.focus();
+    }
+
+    // Add message to chat
+    function addMessage(content, type, sources = []) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}-message mb-3`;
+        
+        const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        if (type === 'user') {
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="message-bubble user">
+                        <div class="message-text">${escapeHtml(content)}</div>
+                        <div class="message-time">
+                            <small class="text-light opacity-75">${currentTime}</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } else {
+            let sourcesHtml = '';
+            if (sources && sources.length > 0) {
+                sourcesHtml = `
+                    <div class="sources-section">
+                        <h6 class="text-muted mb-2"><i class="fas fa-book-medical me-1"></i>Sources from PubMed:</h6>
+                        ${sources.map(source => `
+                            <div class="source-item">
+                                <div class="source-title">${escapeHtml(source.title || 'Research Article')}</div>
+                                ${source.pmid ? `<a href="https://pubmed.ncbi.nlm.nih.gov/${source.pmid}/" target="_blank" class="source-link">View on PubMed →</a>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    <div class="d-flex align-items-start">
+                        <div class="avatar-small me-3">
+                            <i class="fas fa-stethoscope text-primary"></i>
+                        </div>
+                        <div class="message-bubble assistant">
+                            <div class="message-text">${formatMessage(content)}</div>
+                            ${sourcesHtml}
+                            <div class="message-time">
+                                <small class="text-muted">${currentTime}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        chatMessages.appendChild(messageDiv);
+        scrollToBottom();
+    }
+
+    // Format message with basic markdown support
+    function formatMessage(text) {
+        return escapeHtml(text)
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/\n/g, '<br>');
+    }
+
+    // Escape HTML
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Show/hide typing indicator
+    function showTypingIndicator() {
+        typingIndicator.classList.remove('d-none');
+        scrollToBottom();
+    }
+
+    function hideTypingIndicator() {
+        typingIndicator.classList.add('d-none');
+    }
+
+    // Hide suggestions
+    function hideSuggestions() {
+        const suggestions = document.querySelector('.suggested-questions');
+        if (suggestions) {
+            suggestions.style.display = 'none';
+        }
+    }
+
+    // Scroll to bottom
+    function scrollToBottom() {
+        setTimeout(() => {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 100);
+    }
+
+    // Global functions for suggestion buttons
+    window.askSuggestion = function(question) {
+        sendMessage(question);
+    };
+
+    window.clearChat = function() {
+        if (confirm('Are you sure you want to clear the chat history?')) {
+            const messages = chatMessages.querySelectorAll('.message:not(.message:first-child)');
+            messages.forEach(msg => msg.remove());
+            
+            // Show suggestions again
+            const suggestions = document.querySelector('.suggested-questions');
+            if (suggestions) {
+                suggestions.style.display = 'block';
+            }
+        }
+    };
+
+    // Initialize
+    sendButton.disabled = true;
+    messageInput.focus();
+});
+</script>
+{% endblock %}

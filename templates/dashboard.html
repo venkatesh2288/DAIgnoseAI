@@ -1,0 +1,402 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - DAIgnoseAI{% endblock %}
+
+{% block content %}
+<!-- Hero Welcome Section -->
+<div class="dashboard-hero mb-5">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold text-white mb-3">
+                    Welcome back to D<span style="color: #fbbf24;">AI</span>gnoseAI
+                </h1>
+                <p class="lead text-white opacity-90 mb-4">
+                    Transform your health data into actionable insights with our AI-powered analytics platform
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <div class="stat-card">
+                        <div class="stat-number">{{ recent_files|length if recent_files else 0 }}</div>
+                        <div class="stat-label">Reports Uploaded</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">{{ recent_files|selectattr('analysis_complete')|list|length if recent_files else 0 }}</div>
+                        <div class="stat-label">Analyses Complete</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 text-end">
+                <div class="hero-graphic">
+                    <i class="fas fa-chart-line fa-6x text-white opacity-25"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Action Cards -->
+<div class="row g-4 mb-5">
+    <!-- Upload Section -->
+    <div class="col-lg-6">
+        <div class="action-card upload-card h-100">
+            <div class="card-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <h3 class="card-title">Upload New Report</h3>
+            <p class="card-description">Upload your lab report and get instant AI-powered analysis</p>
+            
+            <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" class="upload-form">
+                <div class="upload-zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+                    <input type="file" name="file" id="fileInput" class="d-none" accept=".pdf,.txt,.docx,.png,.jpg,.jpeg,.gif" required>
+                    <div class="upload-content">
+                        <i class="fas fa-file-upload fa-2x mb-3"></i>
+                        <p class="mb-3">Drag & drop your file here</p>
+                        <button type="button" class="btn btn-upload" onclick="document.getElementById('fileInput').click()">
+                            Choose File
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="filePreview" class="file-preview d-none mt-3">
+                    <div class="selected-file">
+                        <i class="fas fa-file-alt me-2"></i>
+                        <span id="fileName"></span>
+                        <span id="fileSize" class="text-muted ms-2"></span>
+                        <button type="button" class="btn-close ms-auto" onclick="clearFile()"></button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-action mt-3" id="uploadBtn" disabled>
+                    <i class="fas fa-rocket me-2"></i>Analyze Report
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Quick Access -->
+    <div class="col-lg-6">
+        <div class="action-card access-card h-100">
+            <div class="card-icon">
+                <i class="fas fa-tachometer-alt"></i>
+            </div>
+            <h3 class="card-title">Quick Access</h3>
+            <p class="card-description">Access your reports and medical assistant instantly</p>
+            
+            <div class="quick-buttons">
+                <a href="{{ url_for('reports') }}" class="quick-btn reports-btn">
+                    <div class="btn-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="btn-content">
+                        <div class="btn-title">My Reports</div>
+                        <div class="btn-subtitle">View all analyses</div>
+                    </div>
+                    <i class="fas fa-arrow-right btn-arrow"></i>
+                </a>
+                
+                <a href="{{ url_for('medical_assistant') }}" class="quick-btn assistant-btn">
+                    <div class="btn-icon">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div class="btn-content">
+                        <div class="btn-title">Medical Assistant</div>
+                        <div class="btn-subtitle">Ask health questions</div>
+                    </div>
+                    <i class="fas fa-arrow-right btn-arrow"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Platform Features -->
+<div class="row g-4 mb-5">
+    <div class="col-12">
+        <div class="section-header">
+            <h2 class="section-title">Platform Capabilities</h2>
+            <p class="section-subtitle">Discover what DAIgnoseAI can do for your health</p>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="feature-card ai-card">
+            <div class="feature-icon">
+                <i class="fas fa-brain"></i>
+            </div>
+            <h4 class="feature-title">AI Analysis</h4>
+            <p class="feature-description">Advanced machine learning algorithms analyze your lab reports with medical-grade precision</p>
+            <div class="feature-badge">Powered by Gemini</div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="feature-card charts-card">
+            <div class="feature-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h4 class="feature-title">Visual Analytics</h4>
+            <p class="feature-description">Interactive charts and graphs that make complex health data easy to understand</p>
+            <div class="feature-badge">Real-time</div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="feature-card risk-card">
+            <div class="feature-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h4 class="feature-title">Risk Assessment</h4>
+            <p class="feature-description">Comprehensive health risk analysis with personalized recommendations</p>
+            <div class="feature-badge">Preventive</div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6">
+        <div class="feature-card research-card">
+            <div class="feature-icon">
+                <i class="fas fa-microscope"></i>
+            </div>
+            <h4 class="feature-title">Research Integration</h4>
+            <p class="feature-description">Backed by the latest medical research from PubMed database</p>
+            <div class="feature-badge">Evidence-based</div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+{% if recent_files %}
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="activity-section">
+            <div class="section-header">
+                <h2 class="section-title">Recent Activity</h2>
+                <a href="{{ url_for('reports') }}" class="btn btn-outline-primary">View All Reports</a>
+            </div>
+            
+            <div class="activity-grid">
+                {% for file in recent_files[:3] %}
+                <div class="activity-item {{ 'completed' if file.analysis_complete else 'processing' }}">
+                    <div class="activity-icon">
+                        {% if file.analysis_complete %}
+                            <i class="fas fa-check-circle"></i>
+                        {% else %}
+                            <i class="fas fa-clock"></i>
+                        {% endif %}
+                    </div>
+                    <div class="activity-content">
+                        <h5 class="activity-title">{{ file.original_filename[:40] }}{% if file.original_filename|length > 40 %}...{% endif %}</h5>
+                        <p class="activity-meta">{{ file.upload_date.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                        <div class="activity-status">
+                            {% if file.analysis_complete %}
+                                <span class="status-badge success">Analysis Complete</span>
+                            {% else %}
+                                <span class="status-badge processing">Processing</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="activity-actions">
+                        <a href="{{ url_for('analyze_file', file_id=file.id) }}" class="btn btn-sm btn-view">
+                            {{ 'View Report' if file.analysis_complete else 'Check Status' }}
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Health Tips -->
+<div class="row">
+    <div class="col-12">
+        <div class="tips-section">
+            <div class="section-header">
+                <h2 class="section-title">Health Tips</h2>
+                <p class="section-subtitle">Simple steps to maintain your wellbeing</p>
+            </div>
+            
+            <div class="tips-grid">
+                <div class="tip-card hydration">
+                    <div class="tip-icon">
+                        <i class="fas fa-tint"></i>
+                    </div>
+                    <h4 class="tip-title">Stay Hydrated</h4>
+                    <p class="tip-description">Drink 8-10 glasses of water daily to support optimal body functions and health</p>
+                </div>
+                
+                <div class="tip-card exercise">
+                    <div class="tip-icon">
+                        <i class="fas fa-running"></i>
+                    </div>
+                    <h4 class="tip-title">Regular Exercise</h4>
+                    <p class="tip-description">Aim for 150 minutes of moderate activity weekly to boost cardiovascular health</p>
+                </div>
+                
+                <div class="tip-card nutrition">
+                    <div class="tip-icon">
+                        <i class="fas fa-apple-alt"></i>
+                    </div>
+                    <h4 class="tip-title">Balanced Nutrition</h4>
+                    <p class="tip-description">Include fruits, vegetables, and whole grains in your daily diet for better health</p>
+                </div>
+                
+                <div class="tip-card checkup">
+                    <div class="tip-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <h4 class="tip-title">Regular Checkups</h4>
+                    <p class="tip-description">Schedule annual health screenings to catch potential issues early</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block head %}
+<script>
+// File handling functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('fileInput');
+    const uploadBtn = document.getElementById('uploadBtn');
+    const filePreview = document.getElementById('filePreview');
+    const uploadZone = document.querySelector('.upload-zone');
+    
+    // File input change handler
+    fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            handleFileSelect(e.target.files[0]);
+        }
+    });
+    
+    // Drag and drop handlers
+    function dragOverHandler(ev) {
+        ev.preventDefault();
+        uploadZone.classList.add('dragover');
+    }
+    
+    function dragLeaveHandler(ev) {
+        ev.preventDefault();
+        uploadZone.classList.remove('dragover');
+    }
+    
+    function dropHandler(ev) {
+        ev.preventDefault();
+        uploadZone.classList.remove('dragover');
+        const files = ev.dataTransfer.files;
+        if (files.length > 0) {
+            handleFileSelect(files[0]);
+        }
+    }
+    
+    // Add drag leave handler
+    uploadZone.addEventListener('dragleave', dragLeaveHandler);
+    
+    // Handle file selection
+    function handleFileSelect(file) {
+        if (!file) return;
+        
+        // Validate file type
+        const allowedTypes = ['application/pdf', 'text/plain', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
+        if (!allowedTypes.includes(file.type)) {
+            showToast('Please select a valid file type (PDF, TXT, DOCX, or image)', 'error');
+            return;
+        }
+        
+        // Update file preview
+        document.getElementById('fileName').textContent = file.name;
+        document.getElementById('fileSize').textContent = formatFileSize(file.size);
+        filePreview.classList.remove('d-none');
+        uploadBtn.disabled = false;
+        
+        // Update file input
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        fileInput.files = dt.files;
+    }
+    
+    // Clear file selection
+    window.clearFile = function() {
+        filePreview.classList.add('d-none');
+        uploadBtn.disabled = true;
+        fileInput.value = '';
+    }
+    
+    // Format file size
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Toast notification
+    function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
+        toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+        toast.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 5000);
+    }
+    
+    // Form submission handler
+    document.querySelector('.upload-form').addEventListener('submit', function(e) {
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Analyzing...';
+        }
+    });
+    
+    // Mobile optimization
+    if (window.innerWidth <= 768) {
+        // Reduce animation complexity on mobile
+        document.querySelectorAll('.action-card, .feature-card, .tip-card').forEach(card => {
+            card.style.transition = 'box-shadow 0.2s ease';
+        });
+        
+        // Improve touch targets
+        document.querySelectorAll('.btn, .quick-btn').forEach(btn => {
+            btn.style.minHeight = '44px';
+            btn.style.minWidth = '44px';
+        });
+    }
+    
+    // Performance optimization
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            // Trigger layout recalculation after resize
+            document.body.offsetHeight;
+        }, 250);
+    });
+});
+
+// Make functions globally available
+window.dragOverHandler = function(ev) {
+    ev.preventDefault();
+    document.querySelector('.upload-zone').classList.add('dragover');
+};
+
+window.dropHandler = function(ev) {
+    ev.preventDefault();
+    document.querySelector('.upload-zone').classList.remove('dragover');
+    const files = ev.dataTransfer.files;
+    if (files.length > 0) {
+        const event = new Event('change');
+        document.getElementById('fileInput').files = files;
+        document.getElementById('fileInput').dispatchEvent(event);
+    }
+};
+</script>
+{% endblock %}

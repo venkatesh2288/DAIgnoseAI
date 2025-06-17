@@ -1,0 +1,326 @@
+{% extends "base.html" %}
+
+{% block title %}Lab Reports - DAIgnoseAI{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-file-medical me-2"></i>Lab Reports</h2>
+        </div>
+
+        {% if files %}
+        <div class="row">
+            {% for file in files %}
+            <div class="col-lg-6 col-xl-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">
+                            <i class="fas fa-file-alt me-2"></i>
+                            {{ file.original_filename[:30] }}{% if file.original_filename|length > 30 %}...{% endif %}
+                        </h6>
+                        <span class="badge bg-light text-dark">{{ file.file_type.upper() }}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="fas fa-calendar me-1"></i>
+                                Uploaded: {{ file.upload_date.strftime('%B %d, %Y at %I:%M %p') }}
+                            </small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <small class="text-muted">
+                                <i class="fas fa-weight me-1"></i>
+                                Size: {{ "%.1f"|format(file.file_size / 1024) }} KB
+                            </small>
+                        </div>
+
+                        {% if file.analysis_complete %}
+                        <div class="mb-3">
+                            <span class="badge bg-success">
+                                <i class="fas fa-check me-1"></i>Analysis Complete
+                            </span>
+                        </div>
+                        {% else %}
+                        <div class="mb-3">
+                            <span class="badge bg-warning">
+                                <i class="fas fa-clock me-1"></i>Pending Analysis
+                            </span>
+                        </div>
+                        {% endif %}
+
+                        {% if file.summary %}
+                        <div class="mb-3">
+                            <p class="text-muted small">
+                                {{ file.summary[:100] }}{% if file.summary|length > 100 %}...{% endif %}
+                            </p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-light">
+                        <div class="btn-group w-100" role="group">
+                            <a href="{{ url_for('analyze_file', file_id=file.id) }}" 
+                               class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye me-1"></i>View
+                            </a>
+
+                            <button type="button" 
+                                    class="btn btn-outline-info btn-sm" 
+                                    onclick="openReportChat({{ file.id }}, '{{ file.original_filename }}')">
+                                <i class="fas fa-comments me-1"></i>Ask Questions
+                            </button>
+
+                            <button type="button" 
+                                    class="btn btn-outline-danger btn-sm" 
+                                    onclick="confirmDelete({{ file.id }}, '{{ file.original_filename }}')">
+                                <i class="fas fa-trash me-1"></i>Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-file-upload fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted">No Lab Reports Yet</h4>
+            <p class="text-muted">First upload a report to get started with AI-powered analysis.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Report Chat Modal -->
+<div class="modal fade" id="reportChatModal" tabindex="-1" aria-labelledby="reportChatModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="reportChatModalLabel">
+                    <i class="fas fa-comments me-2"></i>Ask Questions About Report
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <h6 class="text-muted" id="reportChatFileName"></h6>
+                </div>
+                
+                <!-- Chat Messages Area -->
+                <div class="chat-messages-modal mb-3" id="reportChatMessages" style="height: 300px; overflow-y: auto; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; background-color: #f8f9fa;">
+                    <div class="text-center text-muted">
+                        <i class="fas fa-file-medical fa-2x mb-2"></i>
+                        <p>Ask me anything about this lab report. I'll analyze the content and provide detailed answers.</p>
+                    </div>
+                </div>
+                
+                <!-- Typing Indicator -->
+                <div class="typing-indicator d-none mb-3" id="reportTypingIndicator">
+                    <div class="d-flex align-items-center">
+                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <small class="text-muted">Analyzing report content...</small>
+                    </div>
+                </div>
+                
+                <!-- Chat Input -->
+                <div class="input-group">
+                    <textarea id="reportQuestionInput" 
+                             class="form-control" 
+                             placeholder="Ask a question about this report..."
+                             rows="2"
+                             maxlength="500"></textarea>
+                    <button class="btn btn-primary" type="button" id="sendReportQuestion">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <small class="text-muted">Examples: "What are my cholesterol levels?" "Are any values abnormal?" "What should I focus on?"</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the file:</p>
+                <p class="fw-bold text-danger" id="fileNameToDelete"></p>
+                <p class="text-muted">This action cannot be undone. All analysis results and chat history related to this file will be permanently deleted.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>Cancel
+                </button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>Delete Permanently
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let currentReportId = null;
+
+function confirmDelete(fileId, fileName) {
+    // Set the file name in the modal
+    document.getElementById('fileNameToDelete').textContent = fileName;
+    
+    // Set the form action
+    document.getElementById('deleteForm').action = `/delete/${fileId}`;
+    
+    // Show the modal
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+    deleteModal.show();
+}
+
+function openReportChat(fileId, fileName) {
+    currentReportId = fileId;
+    
+    // Set the file name in the modal
+    document.getElementById('reportChatFileName').textContent = fileName;
+    
+    // Clear previous messages
+    const messagesContainer = document.getElementById('reportChatMessages');
+    messagesContainer.innerHTML = `
+        <div class="text-center text-muted">
+            <i class="fas fa-file-medical fa-2x mb-2"></i>
+            <p>Ask me anything about this lab report. I'll analyze the content and provide detailed answers.</p>
+        </div>
+    `;
+    
+    // Clear input
+    document.getElementById('reportQuestionInput').value = '';
+    
+    // Show the modal
+    const reportChatModal = new bootstrap.Modal(document.getElementById('reportChatModal'));
+    reportChatModal.show();
+}
+
+function sendReportQuestion() {
+    const input = document.getElementById('reportQuestionInput');
+    const question = input.value.trim();
+    
+    if (!question || !currentReportId) return;
+    
+    // Add user message to chat
+    addReportMessage(question, 'user');
+    
+    // Clear input
+    input.value = '';
+    
+    // Show typing indicator
+    showReportTypingIndicator();
+    
+    // Send question to backend
+    fetch('/ask-report-question', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            question: question,
+            file_id: currentReportId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideReportTypingIndicator();
+        addReportMessage(data.response, 'assistant');
+    })
+    .catch(error => {
+        hideReportTypingIndicator();
+        addReportMessage('Sorry, I encountered an error while analyzing your question. Please try again.', 'assistant');
+        console.error('Error:', error);
+    });
+}
+
+function addReportMessage(content, type) {
+    const messagesContainer = document.getElementById('reportChatMessages');
+    
+    // Remove welcome message if it exists
+    const welcomeMessage = messagesContainer.querySelector('.text-center');
+    if (welcomeMessage) {
+        welcomeMessage.remove();
+    }
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${type}-message mb-3`;
+    
+    if (type === 'user') {
+        messageDiv.innerHTML = `
+            <div class="d-flex justify-content-end">
+                <div class="message-bubble user bg-primary text-white p-2 rounded" style="max-width: 80%;">
+                    ${escapeHtml(content)}
+                </div>
+            </div>
+        `;
+    } else {
+        messageDiv.innerHTML = `
+            <div class="d-flex align-items-start">
+                <div class="avatar-small me-2">
+                    <i class="fas fa-robot text-primary"></i>
+                </div>
+                <div class="message-bubble assistant bg-light p-2 rounded" style="max-width: 80%;">
+                    ${content.replace(/\n/g, '<br>')}
+                </div>
+            </div>
+        `;
+    }
+    
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+function showReportTypingIndicator() {
+    document.getElementById('reportTypingIndicator').classList.remove('d-none');
+}
+
+function hideReportTypingIndicator() {
+    document.getElementById('reportTypingIndicator').classList.add('d-none');
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Send button click
+    document.getElementById('sendReportQuestion').addEventListener('click', sendReportQuestion);
+    
+    // Enter key to send
+    document.getElementById('reportQuestionInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendReportQuestion();
+        }
+    });
+    
+    // Auto-hide flash messages after 5 seconds
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(function(alert) {
+        setTimeout(function() {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }, 5000);
+    });
+});
+</script>
+{% endblock %}

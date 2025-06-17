@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}DAIgnoseAI - AI-Powered Medical Analysis{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="hero-section text-center py-5 text-white position-relative">
+            <div class="position-relative" style="z-index: 2;">
+                <h1 class="display-2 fw-bold mb-4">D<span style="color: #fbbf24;">AI</span>gnoseAI</h1>
+                <p class="lead fs-3 mb-4 text-light">Transform Your Lab Reports into Actionable Health Insights</p>
+                <p class="fs-5 mb-5 opacity-90">Advanced AI-powered medical analysis platform that helps you understand your health data with precision and clarity</p>
+                <div class="mt-4">
+                    <a href="{{ url_for('upload_file') }}" class="btn btn-warning btn-lg px-5 py-3 me-3 shadow-lg">
+                        <i class="fas fa-upload me-2"></i>Upload Lab Report
+                    </a>
+                    <a href="{{ url_for('about') }}" class="btn btn-outline-light btn-lg px-4 py-3 shadow">
+                        <i class="fas fa-info-circle me-2"></i>Learn More
+                    </a>
+                </div>
+                <div class="mt-4">
+                    <small class="text-light opacity-75">
+                        <i class="fas fa-shield-alt me-2"></i>Secure • Private • Professional
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="text-center mb-5 text-primary fw-bold">Powerful AI-Driven Health Analytics</h2>
+        <p class="text-center text-muted mb-5 fs-5">Discover how DAIgnoseAI transforms complex medical data into clear, actionable insights</p>
+    </div>
+    
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="feature-icon mb-4">
+                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center" 
+                         style="width: 80px; height: 80px; background: linear-gradient(135deg, #3b82f6, #1e40af); color: white;">
+                        <i class="fas fa-brain fa-2x"></i>
+                    </div>
+                </div>
+                <h5 class="card-title">Smart AI Analysis</h5>
+                <p class="card-text text-muted">Advanced AI analyzes your lab reports and provides comprehensive insights about your health parameters with medical-grade accuracy.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="feature-icon mb-4">
+                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center" 
+                         style="width: 80px; height: 80px; background: linear-gradient(135deg, #10b981, #059669); color: white;">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
+                </div>
+                <h5 class="card-title">Visual Health Reports</h5>
+                <p class="card-text text-muted">Interactive charts and visualizations help you understand your health trends, risk levels, and progress at a glance.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <div class="feature-icon mb-4">
+                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center" 
+                         style="width: 80px; height: 80px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white;">
+                        <i class="fas fa-user-md fa-2x"></i>
+                    </div>
+                </div>
+                <h5 class="card-title">Medical Assistant</h5>
+                <p class="card-text text-muted">AI-powered medical chatbot provides personalized health guidance based on latest medical research and your reports.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h2 class="text-center mb-3 text-primary fw-bold">How DAIgnoseAI Works</h2>
+        <p class="text-center text-muted mb-5 fs-5">Simple, secure, and scientifically accurate analysis in 4 easy steps</p>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="text-center">
+            <div class="step-number text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
+                 style="width: 70px; height: 70px; background: linear-gradient(135deg, #1e40af, #3b82f6);">
+                <span class="fw-bold fs-3">1</span>
+            </div>
+            <h5 class="text-primary fw-semibold">Upload Report</h5>
+            <p class="text-muted">Upload your lab report in PDF, image, or document format securely</p>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="text-center">
+            <div class="step-number text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
+                 style="width: 70px; height: 70px; background: linear-gradient(135deg, #10b981, #059669);">
+                <span class="fw-bold fs-3">2</span>
+            </div>
+            <h5 class="text-primary fw-semibold">AI Analysis</h5>
+            <p class="text-muted">Advanced AI analyzes every parameter and compares with normal ranges</p>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="text-center">
+            <div class="step-number text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
+                 style="width: 70px; height: 70px; background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <span class="fw-bold fs-3">3</span>
+            </div>
+            <h5 class="text-primary fw-semibold">Get Insights</h5>
+            <p class="text-muted">Receive detailed analysis with risk assessment and recommendations</p>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="text-center">
+            <div class="step-number text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" 
+                 style="width: 70px; height: 70px; background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                <span class="fw-bold fs-3">4</span>
+            </div>
+            <h5 class="text-primary fw-semibold">Take Action</h5>
+            <p class="text-muted">Use insights to make informed health decisions and track progress</p>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action Section -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="card bg-light border-0 shadow-lg">
+            <div class="card-body text-center py-5">
+                <h3 class="mb-3 text-primary fw-bold">Ready to Understand Your Health Better?</h3>
+                <p class="lead mb-4 text-muted">Join thousands of users who trust DAIgnoseAI for their health analytics</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap mb-4">
+                    <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-5 shadow">
+                        <i class="fas fa-user-plus me-2"></i>Get Started Free
+                    </a>
+                    <a href="{{ url_for('upload_file') }}" class="btn btn-outline-primary btn-lg px-4 shadow-sm">
+                        <i class="fas fa-upload me-2"></i>Try Now
+                    </a>
+                </div>
+                <div class="row justify-content-center mt-4">
+                    <div class="col-md-8">
+                        <div class="d-flex justify-content-center align-items-center flex-wrap gap-4 text-muted">
+                            <small><i class="fas fa-shield-alt me-2 text-success"></i>Secure & Private</small>
+                            <small><i class="fas fa-clock me-2 text-primary"></i>Instant Results</small>
+                            <small><i class="fas fa-certificate me-2 text-warning"></i>Medical Grade AI</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Grid -->
+<div class="row mb-5">
+    <div class="col-12">
+        <h3 class="text-center mb-4 text-primary fw-bold">Comprehensive Health Analysis</h3>
+        <p class="text-center text-muted mb-5">DAIgnoseAI analyzes all major health parameters with medical precision</p>
+    </div>
+    
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="d-flex align-items-center p-3 rounded shadow-sm bg-white" style="border: 1px solid rgba(59, 130, 246, 0.1);">
+            <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                 style="width: 50px; height: 50px; background: linear-gradient(135deg, #10b981, #059669);">
+                <i class="fas fa-heartbeat text-white"></i>
+            </div>
+            <span class="fw-medium text-dark">Blood Sugar & Diabetes Monitoring</span>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="d-flex align-items-center p-3 rounded shadow-sm bg-white" style="border: 1px solid rgba(59, 130, 246, 0.1);">
+            <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                 style="width: 50px; height: 50px; background: linear-gradient(135deg, #ef4444, #dc2626);">
+                <i class="fas fa-heart text-white"></i>
+            </div>
+            <span class="fw-medium text-dark">Cholesterol & Heart Health</span>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="d-flex align-items-center p-3 rounded shadow-sm bg-white" style="border: 1px solid rgba(59, 130, 246, 0.1);">
+            <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                 style="width: 50px; height: 50px; background: linear-gradient(135deg, #3b82f6, #1e40af);">
+                <i class="fas fa-kidneys text-white"></i>
+            </div>
+            <span class="fw-medium text-dark">Kidney & Liver Function</span>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="d-flex align-items-center p-3 rounded shadow-sm bg-white" style="border: 1px solid rgba(59, 130, 246, 0.1);">
+            <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                 style="width: 50px; height: 50px; background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+                <i class="fas fa-tint text-white"></i>
+            </div>
+            <span class="fw-medium text-dark">Complete Blood Count (CBC)</span>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="d-flex align-items-center p-3 rounded shadow-sm bg-white" style="border: 1px solid rgba(59, 130, 246, 0.1);">
+            <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                 style="width: 50px; height: 50px; background: linear-gradient(135deg, #f59e0b, #d97706);">
+                <i class="fas fa-user-circle text-white"></i>
+            </div>
+            <span class="fw-medium text-dark">Thyroid Function Tests</span>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="d-flex align-items-center p-3 rounded shadow-sm bg-white" style="border: 1px solid rgba(59, 130, 246, 0.1);">
+            <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                 style="width: 50px; height: 50px; background: linear-gradient(135deg, #06b6d4, #0891b2);">
+                <i class="fas fa-pills text-white"></i>
+            </div>
+            <span class="fw-medium text-dark">Vitamin & Mineral Levels</span>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
