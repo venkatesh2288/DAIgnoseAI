@@ -16,6 +16,7 @@ oauthlib
 openai
 pypdf2
 python-docx
+python-dotenv
 sendgrid
 sqlalchemy
 trafilatura
